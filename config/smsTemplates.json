@@ -1,0 +1,10 @@
+{
+    "en": {
+      "loginOTPMessage": {
+        "message": "{#var#} is the OTP to login into your Vibeinn account and valid for {#var#} mins. Don't share it with anyone. -Vibeinn Online",
+        "templateID": "1107170892222038176",
+        "senderID": "Vibeinn",
+        "templateName": "App Login OTP"
+      }
+    }
+}
