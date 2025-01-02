@@ -10,9 +10,4 @@ module.exports = {
         region: 'ap-south-1',
         apiVersion: '2010-03-31'
     },
-    awsS3Configs: {
-        bucket: process.env.AWS_S3_BUCKET_NAME,
-        expirationTime: 1800,
-        accessLink: process.env.S3BUCKET_CLOUDFRONT_LINK
-    },
 }

@@ -31,33 +31,21 @@ router.get("/checkUser/:phoneNumber", async (req, res) => {
 
 router.post("/register", async (req, res) => {
     try {
-        let response = authValidator.validateSendOTPReq(req);
-        if (!response.valid) {
-            res.status(400);
-            res.send(response.error.getJSONError());
-        } else {
-            try {
-                const { phoneNumber, deviceId } = req.body;
-                let response = await authService.authSendOTP( phoneNumber, deviceId );
-                if (response.errorCode === undefined) {
-                    res.status(200);
-                    res.send(response);
-                } else {
-                    res.status(400);
-                    res.send(response);
-                }
-            } catch (err) {
-                centralLogger.error(err);
-                res.status(404);
-                res.send("Unable to send OTP");
-            }
-        }   
+      const { phoneNumber } = req.body;
+  
+      let response = await authService.authSendOTP(phoneNumber);
+
+      if (response.errorCode === undefined) {
+        res.status(200).send(response);
+      } else {
+        res.status(400).send(response);
+      }
     } catch (err) {
-        centralLogger.error(err);
-        res.status(400);
-        res.send(error.unexpectedError.getJSONError());
+      centralLogger.error(err);
+      res.status(404).send("Unable to send OTP");
     }
-});
+  });
+  
 
 router.post("/login", async (req, res) => {
     let response;

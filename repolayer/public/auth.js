@@ -23,46 +23,9 @@ module.exports = class AuthRepo {
         }
     }
 
-    generateOTP = async(userId, phoneNo, t, otpType = this.generalConfig.otpTypes.loginOtp) => {
+    generateOTP = async(phoneNo, t, otpType = this.generalConfig.otpTypes.loginOtp) => {
         let generatedOTP = Math.floor(1000 + Math.random() * 9000);
-        if (this.generalConfig.demoDefaultPhoneNos.includes(phoneNo)) generatedOTP = this.generalConfig.defaultDemoOTP;
-        let isVerified = false;
-        try {
-            let previousOTPData = await this.otpTable.findOne({
-                where: {
-                    userId
-                },
-                raw: true,
-                transaction: t
-            });
-
-            if (!previousOTPData) {     //Phone number is also not stored in our DB
-                await this.otpTable.create({
-                    otp: generatedOTP,
-                    type: otpType,
-                    //lastProviderID: 1,
-                    userId, isVerified: false
-                }, {
-                    transaction: t
-                });
-            } else {            //Phone number stored but not verified and OTP requested after 5 mins
-                await this.otpTable.update({
-                    otp: generatedOTP,
-                    type: otpType,
-                    //lastProviderID: 1,          // It'll be needed when we're going to use multiple messaging service providers
-                    isVerified: false
-                }, {
-                    transaction: t,
-                    where: {
-                        userId
-                    }
-                });
-            }
-        } catch(err) {
-            this.centralLogger.error("REPO DEBUG: ",err);
-            throw err;
-        }
-
+        let isVerified = false
         let response = { otp: generatedOTP, isVerified: isVerified };
         if (process.env.NODE_ENV !== "prod") 
             this.centralLogger.info(JSON.stringify(response));
