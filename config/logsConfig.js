@@ -2,7 +2,7 @@ const winston = require('winston');
 const DailyRotateFile = require('winston-daily-rotate-file');
 const rTracer = require('cls-rtracer');
 
-var logDir = '/home/customer-admin/logs/Midland-api-service';
+const logDir = path.join(__dirname, '..', 'tmp', 'logs');
 
 const logConfiguration = {
     defaultMeta: { service: 'Midland API service' },
