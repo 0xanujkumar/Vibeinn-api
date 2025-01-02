@@ -41,7 +41,7 @@ module.exports = class AuthServices {
                 let response = await this.smsHelper.sendSMS( phoneNo, "loginOTPMessage",
                     [generatedOTP, 5, this.generalConfigs.appHash]
                 );
-                this.centralLogger.info(JSON.stringify(response));
+                console.log(JSON.stringify(response));
                 await t.commit();
                 return response;
             } catch (err) {

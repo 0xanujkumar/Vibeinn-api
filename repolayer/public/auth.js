@@ -28,7 +28,7 @@ module.exports = class AuthRepo {
         let isVerified = false
         let response = { otp: generatedOTP, isVerified: isVerified };
         if (process.env.NODE_ENV !== "prod") 
-            this.centralLogger.info(JSON.stringify(response));
+            console.log(JSON.stringify(response));
         return response;
     }
 

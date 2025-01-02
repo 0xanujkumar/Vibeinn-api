@@ -3,7 +3,7 @@ const cors = require('cors');
 const dotenv = require("dotenv");
 const publicRoutes = require('./routes/public');
 const generalConfig = require("./config/generalConfig");
-const centralLogger = require('./config/logsConfig');
+// const centralLogger = require('./config/logsConfig');
 const { logRequest, logRequestResponse} = require('./helpers/loggingHelper')
 dotenv.config();
 
@@ -23,7 +23,7 @@ const initializeServer = (port) => {
     server.use('/health', require("./routes/health"));
 
     server.listen(port, () =>
-      centralLogger.info(`Server instance listening @port: ${port}`)
+      console.log(`Server instance listening @port: ${port}`)
     );
     return server;
   } catch (err) {

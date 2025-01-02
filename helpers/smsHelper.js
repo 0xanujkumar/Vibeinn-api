@@ -4,7 +4,7 @@ const generalConfig = require('../config/generalConfig')
 const messageTemplates = require("../config/smsTemplates.json");
 let awsSNSHelperInstance = new awsSNSHelper();
 const error = require("./../domain/error");
-const centralLogger = require("../config/logsConfig");
+// const centralLogger = require("../config/logsConfig");
 
 module.exports = class SMSHelper {
 
@@ -51,7 +51,7 @@ module.exports = class SMSHelper {
             }
 
             const pubData = await awsSNSHelperInstance.publish(otpParams, phoneNo)
-            centralLogger.info(`the message data is (AWS SNS) = ${pubData.MessageId}, sent to ${phoneNo}`)
+            console.log(`the message data is (AWS SNS) = ${pubData.MessageId}, sent to ${phoneNo}`)
             return { "status": "success", "messageId": pubData.MessageId };
     
         } catch (err) {
