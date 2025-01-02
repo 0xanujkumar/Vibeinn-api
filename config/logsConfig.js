@@ -2,22 +2,22 @@ const winston = require('winston');
 const DailyRotateFile = require('winston-daily-rotate-file');
 const rTracer = require('cls-rtracer');
 
-const logDir = path.join(__dirname, '..', 'tmp', 'logs');
+// const logDir = path.join(__dirname, '..', 'tmp', 'logs');
 
-const logConfiguration = {
-    defaultMeta: { service: 'Midland API service' },
-    levels:{error: 0,
-        warn: 1,
-        info: 2,},
-    'transports': [
-        new winston.transports.Console(),
-        new DailyRotateFile({
-            filename: `${logDir}/%DATE%.log`,
-            datePattern: 'YYYY-MM-DD',
-            maxSize: '100m',
-            maxFiles: '30d',
-        })
-    ],
+// const logConfiguration = {
+//     defaultMeta: { service: 'Midland API service' },
+//     levels:{error: 0,
+//         warn: 1,
+//         info: 2,},
+//     'transports': [
+//         new winston.transports.Console(),
+//         new DailyRotateFile({
+//             filename: `${logDir}/%DATE%.log`,
+//             datePattern: 'YYYY-MM-DD',
+//             maxSize: '100m',
+//             maxFiles: '30d',
+//         })
+//     ],
 
     format: winston.format.combine(
         winston.format.colorize(),
@@ -39,8 +39,7 @@ const logConfiguration = {
                 return `${[info.timestamp]}: ${rTracer.id()?rTracer.id():""} ${info.level}: ${(typeof info.message)==='string'?info.message: JSON.stringify(info.message)} ${info.stack?"\n"+info.stack:" "}`
             }
         }),
-    )
-};
+    );
 // winston.addColors({
 //     fatal: 'underline magenta', error: 'bold red', warn: 'italic yellow',
 //     info: 'italic cyan', verbose: 'italic green', debug: 'dim blue'
