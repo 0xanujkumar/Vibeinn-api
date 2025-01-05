@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const { authValidator } = require("../../validator");
 const { authService } = require("../../services/public");
-const centralLogger = require("../../config/logsConfig")
 const error = require("../../domain/error");
 
 router.get("/checkUser/:phoneNumber", async (req, res) => {
@@ -23,7 +22,7 @@ router.get("/checkUser/:phoneNumber", async (req, res) => {
                 }
             }
     } catch (err) {
-        centralLogger.error(err);
+        console.log(err);
         res.status(404);
         res.send("Unable to verify OTP");
     }
@@ -31,21 +30,33 @@ router.get("/checkUser/:phoneNumber", async (req, res) => {
 
 router.post("/register", async (req, res) => {
     try {
-      const { phoneNumber } = req.body;
-  
-      let response = await authService.authSendOTP(phoneNumber);
-
-      if (response.errorCode === undefined) {
-        res.status(200).send(response);
-      } else {
-        res.status(400).send(response);
-      }
+        let response = authValidator.validateSendOTPReq(req);
+        if (!response.valid) {
+            res.status(400);
+            res.send(response.error.getJSONError());
+        } else {
+            try {
+                const { phoneNumber, deviceId } = req.body;
+                let response = await authService.authSendOTP( phoneNumber, deviceId );
+                if (response.errorCode === undefined) {
+                    res.status(200);
+                    res.send(response);
+                } else {
+                    res.status(400);
+                    res.send(response);
+                }
+            } catch (err) {
+                console.log(err);
+                res.status(404);
+                res.send("Unable to send OTP");
+            }
+        }   
     } catch (err) {
-      centralLogger.error(err);
-      res.status(404).send("Unable to send OTP");
+        console.log(err);
+        res.status(400);
+        res.send(error.unexpectedError.getJSONError());
     }
-  });
-  
+});
 
 router.post("/login", async (req, res) => {
     let response;
@@ -76,7 +87,7 @@ router.post("/login", async (req, res) => {
             }
         }
     } catch (err) {
-        centralLogger.error(err);
+        console.log(err);
         res.status(404);
         res.send("Unable to verify OTP");
     }

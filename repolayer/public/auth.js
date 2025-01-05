@@ -1,6 +1,5 @@
 module.exports = class AuthRepo {
-    
-    constructor(otpTable, usersTable,sequelize, sequelizeOp, error, generalConfig, centralLogger) {
+    constructor(otpTable, usersTable, sequelize, sequelizeOp, error, generalConfig, centralLogger) {
         this.otpTable = otpTable;
         this.usersTable = usersTable;
         this.sequelize = sequelize;
@@ -18,14 +17,51 @@ module.exports = class AuthRepo {
                 raw: true
             });
         } catch (err) {
-            this.centralLogger.error("REPO DEBUG: ",err);
+            console.log("REPO DEBUG: ",err);
             throw err;
         }
     }
 
-    generateOTP = async(phoneNo, t, otpType = this.generalConfig.otpTypes.loginOtp) => {
+    generateOTP = async(userId, phoneNo, t, otpType = this.generalConfig.otpTypes.loginOtp) => {
         let generatedOTP = Math.floor(1000 + Math.random() * 9000);
-        let isVerified = false
+        if (this.generalConfig.demoDefaultPhoneNos.includes(phoneNo)) generatedOTP = this.generalConfig.defaultDemoOTP;
+        let isVerified = false;
+        try {
+            let previousOTPData = await this.otpTable.findOne({
+                where: {
+                    userId
+                },
+                raw: true,
+                transaction: t
+            });
+
+            if (!previousOTPData) {     //Phone number is also not stored in our DB
+                await this.otpTable.create({
+                    otp: generatedOTP,
+                    type: otpType,
+                    //lastProviderID: 1,
+                    userId, isVerified: false
+                }, {
+                    transaction: t
+                });
+            } else {            //Phone number stored but not verified and OTP requested after 5 mins
+                await this.otpTable.update({
+                    otp: generatedOTP,
+                    type: otpType,
+                    //lastProviderID: 1,          // It'll be needed when we're going to use multiple messaging service providers
+                    isVerified: false
+                }, {
+                    transaction: t,
+                    where: {
+                        userId
+                    }
+                });
+            }
+        } catch(err) {
+            console.log("REPO DEBUG: ",err);
+            throw err;
+        }
+
         let response = { otp: generatedOTP, isVerified: isVerified };
         if (process.env.NODE_ENV !== "prod") 
             console.log(JSON.stringify(response));
@@ -59,7 +95,7 @@ module.exports = class AuthRepo {
             }
             return { "status": "success", verified: verified }
         } catch(err) {
-            this.centralLogger.error("REPO DEBUG: ",err);
+            console.log("REPO DEBUG: ",err);
             throw this.error.unableToVerifyOTP;
         }
     }
@@ -74,7 +110,7 @@ module.exports = class AuthRepo {
                 transaction: t
             });
         } catch (err) {
-            this.centralLogger.error("REPO DEBUG: ",err);
+            console.log("REPO DEBUG: ",err);
             throw this.error.unableToVerifyOTP;
         }
     }
@@ -106,7 +142,7 @@ module.exports = class AuthRepo {
             }
             return { phoneNo: [], exceedsLimit: false };
         } catch (err) {
-            this.centralLogger.error("REPO DEBUG: ",err);
+            console.log("REPO DEBUG: ",err);
             throw err;
         }
     }
@@ -119,7 +155,7 @@ module.exports = class AuthRepo {
                 {transaction: t}
             );
         } catch (err) {
-            this.centralLogger.error("REPO DEBUG: ",err);
+            console.log("REPO DEBUG: ",err);
             throw err;
         }
     }

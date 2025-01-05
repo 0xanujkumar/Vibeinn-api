@@ -11,7 +11,7 @@ const centralLogger = require("../../config/logsConfig")
 const multer = require('multer')
 const upload = multer({
     onError: function (err, next) {
-        centralLogger.error("Multer Error:", err)
+        console.log("Multer Error:", err)
         next(err)
     }
 })
@@ -36,7 +36,6 @@ router.post("/sendOtp/:otpType", passport.authenticate('User-Auth', { session: f
                 }
             }
         } catch (err) {
-            centralLogger.error(err);
             res.status(400);
             res.send(err instanceof error.ServiceError? err.getJSONError() :error.unexpectedError.getJSONError());
         }
@@ -62,7 +61,6 @@ router.post("/verifyOTP/:otpType", passport.authenticate('User-Auth', { session:
                 res.send(response);
             }
         } catch (err) {
-            centralLogger.error(err);
             res.status(400);
             res.send(err instanceof error.ServiceError? err.getJSONError() :error.unexpectedError.getJSONError());
         }

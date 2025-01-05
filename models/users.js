@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       username: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
         unique: true,
         validate: {
           notEmpty: true,
@@ -56,14 +56,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       dob: {
         type: DataTypes.DATE
-      },
-      password: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-          len: [8, 100], 
-        },
       },
       profilePic: {
         allowNull: true,

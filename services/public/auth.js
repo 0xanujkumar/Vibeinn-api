@@ -13,29 +13,20 @@ module.exports = class AuthServices {
         this.centralLogger = centralLogger;
     }
 
-    authSendOTP = async (phoneNo) => {
+    authSendOTP = async (phoneNo, deviceId, userLanguageCode) => {
         let t = await this.sequelize.transaction({ isolationLevel: this.seqTransaction.ISOLATION_LEVELS.READ_UNCOMMITTED });
         try {
             // is the user banned check
-            //let userDetails = await this.authRepo.checkUserDetails(phoneNo);
-            //if (userDetails && userDetails.isBanned) throw this.error.accountBanned;
-            // pending migration request check
-            //let pendingMigrations = await this.userRepo.prevMigrationRequests(phoneNo, t);
-            //if (pendingMigrations && pendingMigrations.status === this.generalConfigs.accountMigrationStatuses.pending) throw this.error.migrationRequestPending;
-            //if (!userDetails) userDetails = (await this.userRepo.addUserID(phoneNo, t)).dataValues;
-            //if(userDetails && userDetails.isDeleted) throw this.error.userAccountDeleted;
-            //if ((!this.generalConfigs.demoDefaultPhoneNos.includes(phoneNo)) && (process.env.NODE_ENV === 'staging' || process.env.NODE_ENV === 'development')) {
-              //  let deviceLoginDetails = await this.authRepo.checkDeviceUserLimit(userDetails.id, deviceId);
-                //if (deviceLoginDetails.exceedsLimit  === true) {
-                  //  let maskedPhoneNo = deviceLoginDetails.phoneNo.map(number =>  number.replace(/(\d{2})(\d{5})(\d{3})/, "$1XXXXX$3"));
-                    //await t.rollback();
-                    //let deviceLimitError = this.error.deviceUserLimitExceed.getJSONError();
-                    //deviceLimitError["maskedPhoneNos"] = maskedPhoneNo;
-                    //return deviceLimitError;
-                //}
-            //}
+            let userDetails = await this.authRepo.checkUserDetails(phoneNo);
+            if (userDetails && userDetails.isBanned) throw this.error.accountBanned;
+          
+            
+            if (!userDetails) userDetails = (await this.userRepo.addUserID(phoneNo, t)).dataValues;
+            if(userDetails && userDetails.isDeleted) throw this.error.userAccountDeleted;
+            if ((!this.generalConfigs.demoDefaultPhoneNos.includes(phoneNo)) && (process.env.NODE_ENV === 'staging' || process.env.NODE_ENV === 'development')) {
+            }
             // implemented always send OTP mechanism
-            let repoRes = await this.authRepo.generateOTP(phoneNo, t);
+            let repoRes = await this.authRepo.generateOTP(userDetails.id, phoneNo, t);
             let generatedOTP = repoRes.otp;
             try {
                 let response = await this.smsHelper.sendSMS( phoneNo, "loginOTPMessage",
@@ -45,11 +36,11 @@ module.exports = class AuthServices {
                 await t.commit();
                 return response;
             } catch (err) {
-                //this.centralLogger.error(err);
+                console.log(err);
                 throw this.error.unableToSendOTP;
             }
         } catch (err) {
-            this.centralLogger.error(err);
+            console.log(err);
             await t.rollback();
             if (err instanceof this.error.ServiceError) {
                 return err.getJSONError();
@@ -65,7 +56,7 @@ module.exports = class AuthServices {
             if(userDetails) return {userExists: true};
             else return {userExists: false};
         } catch (err) {
-            this.centralLogger.error(err);
+            console.log(err);
             if (err instanceof this.error.ServiceError) {
                 return err.getJSONError();
             } else {
@@ -110,7 +101,7 @@ module.exports = class AuthServices {
                 };
             })
         } catch(err) {
-            this.centralLogger.error(err);
+            console.log(err);
             if (err instanceof this.error.ServiceError) {
                 return err.getJSONError();
             } else {

@@ -4,7 +4,6 @@ module.exports = class AuthServicesValidator {
         validateSendOTPReq(req) {
             if (req.body !== undefined) {
                 const phoneNumber = req.body.phoneNumber
-                const deviceId = req.body.deviceId
                 let valid = false;
                 if (phoneNumber === undefined) {
                     return {
@@ -16,12 +15,7 @@ module.exports = class AuthServicesValidator {
                         valid: false,
                         error: errors.phoneNumberInvalid
                     }
-                } else if (deviceId === undefined || deviceId === "") {
-                    return {
-                        valid: false,
-                        error: errors.deviceIdRequired
-                    }
-                }
+                } 
                 return {
                     valid: true,
                     validatedData: {

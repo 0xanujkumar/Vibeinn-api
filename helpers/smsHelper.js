@@ -55,7 +55,7 @@ module.exports = class SMSHelper {
             return { "status": "success", "messageId": pubData.MessageId };
     
         } catch (err) {
-            centralLogger.error("SMS HELPER DEBUG: ",err)
+            console.log(err);
             throw error.unableToSendMessage.getJSONError();
         }
     }

@@ -11,7 +11,7 @@ class NotificationHelper {
                 "status": "success"
             };
         } catch(err) {
-            this.centralLogger.error('Service DEBUG: ',err);
+              console.log(err);            
             this.newrelic.noticeError(err, { message: "Error found in Service Debug" });
             if(err instanceof this.allErrors.NotificationManagementErrors){
                 return err.getJSONError();

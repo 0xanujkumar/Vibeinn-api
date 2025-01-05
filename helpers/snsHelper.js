@@ -15,7 +15,7 @@ module.exports = class awsSNSHelper {
             return pubData;
 
         } catch (err) {
-            centralLogger.error(err);
+            console.log(err);
             throw err;
         }
         

@@ -27,7 +27,7 @@ const initializeServer = (port) => {
     );
     return server;
   } catch (err) {
-    centralLogger.error("Unable to initialize server:", err);
+    console.error(err);
   }
 };
 
