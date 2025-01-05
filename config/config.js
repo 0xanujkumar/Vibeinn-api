@@ -4,7 +4,7 @@ module.exports = {
       dialectOptions: {
         ssl: {
             require: true,
-            rejectUnauthorized: true,
+            rejectUnauthorized: false,
         }
       },
   },
@@ -13,7 +13,7 @@ module.exports = {
       dialectOptions: {
           ssl: {
               require: true,
-              rejectUnauthorized: true,
+              rejectUnauthorized: false,
           },
       },
   },
